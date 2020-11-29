@@ -32,8 +32,8 @@ entry:						;レジスタ初期化
 	MOV		DS,AX			
 	MOV		ES,AX			
 	MOV		SI,msg			;メッセージの格納
-	MOV		AL,0x13
-	INT		0x10
+	MOV		AL,0x13			;カラーコードを有効化
+	INT		0x10			;ビデオBIOS呼び出し
 	MOV		AX,0
 putloop:					;メッセージの表示
 	MOV		AL,[SI]
@@ -50,7 +50,6 @@ fin:
 
 ;メッセージ部分
 msg:
-;	DB		"LOADING..."
 	DB		0x0a, 0x0a
 	DB		"Aoi Kotonoha logs in"
 	DB		0x0a
@@ -59,9 +58,3 @@ msg:
 	RESB	0x7dfe-$
 
 	DB		0x55, 0xaa
-
-;ブートセクタ以外
-	DB		0xf0, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00, 0x00
-	RESB	4600
-	DB		0xf0, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00, 0x00
-	RESB	1469432
