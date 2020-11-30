@@ -2,3 +2,14 @@ ipl.bin
 ipl.lst
 KotonOS.sys
 KotonOS.lst
+asmhead.bin
+asmhead.lst
+bootpack.bim
+bootpack.gas
+bootpack.hrb
+bootpack.lst
+bootpack.map
+bootpack.nas
+bootpack.obj
+naskfunc.lst
+naskfunc.obj
