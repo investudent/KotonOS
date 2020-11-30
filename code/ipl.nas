@@ -72,6 +72,9 @@ retry:
 	CMP		CH,CYL			;10シリンダ分読み込む
 	JB		loadloop
 
+;OS本体処理へ移行
+	JMP		0xc200
+
 	MOV		SI,suc_msg		;サクセスメッセージの格納
 	JMP		print
 
