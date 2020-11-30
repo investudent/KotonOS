@@ -31,7 +31,27 @@ entry:						;レジスタ初期化
 	MOV		SP,0x7c00		
 	MOV		DS,AX			
 	MOV		ES,AX			
-	MOV		SI,msg			;メッセージの格納
+
+:ディスク読み込み
+	MOV		AX,0x0820		
+	MOV		ES,AX			;読み込み先上位アドレス指定
+	MOV		CH,0			;シリンダ0番
+	MOV		CL,2			;セクタ2番
+	MOV		DH,0			;ヘッド0番
+	MOV		DL,0			;ドライブ0番
+
+	MOV		AH,0x02			;ディスク読み込み
+	MOV		AL,1			;1セクタ分読み込み
+	MOV		BX,0			;読み込み先下位アドレス指定
+	INT		0x13			;ディスクBIOS呼び出し
+	JC		error			;エラー処理にジャンプ
+	MOV		SI,suc_msg		;サクセスメッセージの格納
+	JMP		print
+
+error;
+	MOV		SI,err_msg			;エラーメッセージの格納
+
+print:
 	MOV		AL,0x13			;カラーコードを有効化
 	INT		0x10			;ビデオBIOS呼び出し
 	MOV		AX,0
@@ -49,9 +69,15 @@ fin:
 	JMP		fin
 
 ;メッセージ部分
-msg:
+suc_msg:
 	DB		0x0a, 0x0a
-	DB		"Aoi Kotonoha logs in"
+	DB		"Aoi >LOAD SUCCESSFUL"
+	DB		0x0a
+	DB		0
+
+err_msg:
+	DB		0x0a, 0x0a
+	DB		"Aoi >LOAD ERROR"
 	DB		0x0a
 	DB		0
 
