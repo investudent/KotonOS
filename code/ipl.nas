@@ -38,6 +38,8 @@ entry:						;レジスタ初期化
 	MOV		CH,0			;シリンダ0番
 	MOV		CL,2			;セクタ2番
 	MOV		DH,0			;ヘッド0番
+
+loadloop:
 	MOV		SI,0			;失敗回数のカウンタ
 
 retry:
@@ -47,10 +49,18 @@ retry:
 	MOV		DL,0			;ドライブ0番
 	INT		0x13			;ディスクBIOS呼び出し
 	JC		error			;エラー処理にジャンプ
+
+;次のセクタ読み込み
+	MOV		AX,ES
+	ADD		AX,0x0020
+	MOV		ES,AX			;アドレスを0x200進める
+	ADD		CL,1
+	CMP		CL,18			;18セクタまで読み込み
+	JBE		loadloop
 	MOV		SI,suc_msg		;サクセスメッセージの格納
 	JMP		print
 
-error;
+error:
 	MOV		AH,0x00			;ディスクリセット
 	MOV		DL,0x00			;ディスク0番
 	INT		0x13			;ディスクBIOS呼び出し
@@ -60,7 +70,8 @@ error;
 	MOV		SI,err_msg		;エラーメッセージの格納
 
 print:
-	MOV		AL,0x13			;カラーコードを有効化
+	MOV		AH,0x00			;カラーコードを有効化
+	MOV		AL,0x13			;8ビットカラー
 	INT		0x10			;ビデオBIOS呼び出し
 	MOV		AX,0
 putloop:					;メッセージの表示
