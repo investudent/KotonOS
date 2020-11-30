@@ -1,5 +1,7 @@
 ;KotonOS
 
+CYL	EQU		10				;シリンダーの数を定数として定義
+
 	ORG		0x7c00			;プログラム展開位置指定
 
 :標準的なFAT12フォーマットフロッピーディスクのための記述
@@ -36,7 +38,7 @@ entry:						;レジスタ初期化
 	MOV		AX,0x0820		
 	MOV		ES,AX			;読み込み先上位アドレス指定
 	MOV		CH,0			;シリンダ0番
-	MOV		CL,2			;セクタ2番
+	MOV		CL,2			;セクタ2番、1番はヘッダに使用されている
 	MOV		DH,0			;ヘッド0番
 
 loadloop:
@@ -57,6 +59,19 @@ retry:
 	ADD		CL,1
 	CMP		CL,18			;18セクタまで読み込み
 	JBE		loadloop
+
+;裏面読み込み
+	MOV		CL,1			;セクタ1番から読み直す
+	ADD		DH,1
+	CMP		DH,2			;裏面を読み込む
+	JB		loadloop
+
+;次のシリンダー読み込み
+	MOV		DH,0			;表面に直す
+	ADD		CH,1
+	CMP		CH,CYL			;10シリンダ分読み込む
+	JB		loadloop
+
 	MOV		SI,suc_msg		;サクセスメッセージの格納
 	JMP		print
 
