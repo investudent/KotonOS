@@ -73,6 +73,7 @@ retry:
 	JB		loadloop
 
 ;OS本体処理へ移行
+	MOV		[0x0ff0],CH
 	JMP		0xc200
 
 	MOV		SI,suc_msg		;サクセスメッセージの格納
